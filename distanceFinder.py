@@ -27,7 +27,7 @@ def get_all_links(body_data):
         if filtered_link is not None:
             all_links.append(filtered_link)
     return all_links
-
+# test pull request
 def is_word_on_page(body_data):
     all_links = get_all_links(body_data)
     counter = 0
