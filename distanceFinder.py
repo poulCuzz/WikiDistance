@@ -22,6 +22,8 @@ def get_all_links(body_data):
 def find_body(url_link):
     page = requests.get(url_link)
     soup = BeautifulSoup(page.text, 'html.parser')
+    if page is None:
+        print(f"Warning: Could not find body for link {url_link}")
     return soup.find('div', id='bodyContent')
 
 def is_word_on_any_page(main_link):
@@ -35,6 +37,9 @@ def is_word_on_any_page(main_link):
         page_second = requests.get(link)
         soup_second = BeautifulSoup(page_second.text, 'html.parser')
         body_second = soup_second.find('div', id='bodyContent')
+        if body_second is None:
+            print(f"Warning: Body for link {main_link} is None.")
+            return False  # Możesz zwrócić False lub odpowiednią wartość w zależności od logiki
         if second_word in body_second.get_text():
             found = True
             break
@@ -60,6 +65,9 @@ def main_function(main_link, counter):
             if counter > 5:
                 print("przeciążenie, koniec programu")
                 break
+            result = main_function(link, main_counter)
+            if result is None:  # Sprawdź, czy wynik rekurencji to None
+                return 0  # Zwróć 0, jeśli wynik jest None
             return main_function(link, counter) + 2
 
 
