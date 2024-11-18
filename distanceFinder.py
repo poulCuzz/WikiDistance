@@ -27,11 +27,11 @@ def find_body(url_link):
 def is_word_on_any_page(main_link):
     body_data = find_body(main_link)
     all_links = get_all_links(body_data)
-    counter = 0
+    link_counter = 0
     found = False
     for link in all_links:
-        print(f'counter = {counter}')
-        counter += 1
+        print(f'link_counter = {link_counter}')
+        link_counter += 1
         page_second = requests.get(link)
         soup_second = BeautifulSoup(page_second.text, 'html.parser')
         body_second = soup_second.find('div', id='bodyContent')
@@ -44,9 +44,10 @@ URL = "https://pl.wikipedia.org/wiki/"
 baseURL = "https://pl.wikipedia.org"
 first_word = input("Pierwsze słowo: ")
 second_word = input("Drugie słowo: ")
+main_counter = 1
 
-def main_function(main_link):
-    main_counter = 1
+def main_function(main_link, counter):
+
     body = find_body(main_link)
     if second_word in body.get_text():
         return 1
@@ -54,13 +55,13 @@ def main_function(main_link):
         return 2
     else:
         for link in get_all_links(body):
-            print(f'main counter -> {main_counter}')
-            main_counter += 1
-            if main_counter > 5:
+            print(f'main counter -> {counter}')
+            counter += 1
+            if counter > 5:
                 print("przeciążenie, koniec programu")
                 break
-            return main_function(link) + 2
+            return main_function(link, counter) + 2
 
 
-print(main_function(URL + first_word))
+print(f"Odległośc logiczna między słowami: '{first_word}', '{second_word}' wynosi {main_function((URL + first_word), main_counter)}")
 
