@@ -1,15 +1,6 @@
-from itertools import count
-
 import requests
 from bs4 import BeautifulSoup
 
-def get_urls(soup_data):
-    # Znajdź wszystkie linki <a> na stronie
-    all_links = soup_data.find_all('a', href=True)
-    # Filtruj linki, aby pominąć te, które prowadzą do bieżącej strony
-    # filtered_links = [link for link in all_links if first_word not in link['href']] <-- filtr do poprawy
-    for link in all_links:
-        print(filter_wiki_url(link['href']))
 
 def filter_wiki_url(link):
     base_url = "https://pl.wikipedia.org"
@@ -27,8 +18,14 @@ def get_all_links(body_data):
         if filtered_link is not None:
             all_links.append(filtered_link)
     return all_links
-# test pull request
-def is_word_on_page(body_data):
+
+def find_body(url_link):
+    page = requests.get(url_link)
+    soup = BeautifulSoup(page.text, 'html.parser')
+    return soup.find('div', id='bodyContent')
+
+def is_word_on_any_page(main_link):
+    body_data = find_body(main_link)
     all_links = get_all_links(body_data)
     counter = 0
     found = False
@@ -47,16 +44,23 @@ URL = "https://pl.wikipedia.org/wiki/"
 baseURL = "https://pl.wikipedia.org"
 first_word = input("Pierwsze słowo: ")
 second_word = input("Drugie słowo: ")
-page = requests.get(URL + first_word)
-soup = BeautifulSoup(page.text, 'html.parser')
-body = soup.find('div', id='bodyContent')
 
-if second_word in body.get_text():
-    print(f"Distance between {first_word} and {second_word} is 1")
-elif is_word_on_page(body):
-    print(f"Distance between {first_word} and {second_word} is 2")
-else:
-        print('nie znaleziono słowa na zadnym linku, konieczne jest ponowne szukanie linków zaczynając od linku 1 na stronie body')
+def main_function(main_link):
+    main_counter = 1
+    body = find_body(main_link)
+    if second_word in body.get_text():
+        return 1
+    elif is_word_on_any_page(main_link):
+        return 2
+    else:
+        for link in get_all_links(body):
+            print(f'main counter -> {main_counter}')
+            main_counter += 1
+            if main_counter > 5:
+                print("przeciążenie, koniec programu")
+                break
+            return main_function(link) + 2
 
 
+print(main_function(URL + first_word))
 
