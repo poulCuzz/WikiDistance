@@ -76,27 +76,49 @@ first_word = input("Pierwsze słowo: ")
 second_word = input("Drugie słowo: ")
 main_counter = 1
 
-def main_function(main_link, counter):
 
+def main_function(main_link, counter=1, max_depth=5):
+    """
+    Rekurencyjna funkcja do wyznaczenia odległości między słowami w sensie logicznym na stronach internetowych.
+
+    Args:
+        main_link (str): Link do strony, od której rozpoczyna się wyszukiwanie.
+        counter (int): Licznik poziomu wyszukiwania.
+        max_depth (int): Maksymalna dozwolona głębokość wyszukiwania.
+
+    Returns:
+        int: Odległość logiczna między słowami lub -1, jeśli słowo nie zostanie znalezione.
+    """
+    # Sprawdzanie, czy przekroczono maksymalną głębokość
+    if counter > max_depth:
+        print("Osiągnięto maksymalną głębokość wyszukiwania.")
+        return -1
+
+    # Pobiera treść artykułu
     body = find_article_content(main_link)
     if isinstance(body, str):
-        print(body)
-        return body
+        print(f"Treść strony: {body}")
+        return -1  # Zwrot -1 w przypadku błędnej treści
+
+    # Sprawdza, czy drugie słowo jest w treści
     if second_word in body.get_text():
-        return 1
-    elif is_word_on_any_page(main_link):
-        return 2
-    else:
-        result = 0
-        for link in get_all_links(body):
-            print(f'main counter -> {counter}')
-            counter += 1
-            result += main_function(link, counter) + 2
-            if result is None:  # Sprawdzenie, czy wynik rekurencji to None
-                return 0  # Zwracam 0, jeśli wynik jest None
-        return result
+        return counter
 
+    # Przechodzi przez linki na bieżącej stronie
+    for link in get_all_links(body):
+        print(f"Poziom wyszukiwania: {counter}, Przeszukiwany link: {link}")
+        # Sprawdź, czy drugie słowo jest na tej stronie
+        if is_word_on_any_page(link):
+            return counter + 1
 
+    # Rekurencyjnie przeszukuje każdy link
+    for link in get_all_links(body):
+        result = main_function(link, counter + 1, max_depth)
+        if result != -1:  # Jeśli znaleziono słowo, zwracamy wynik
+            return result
+
+    # Jeśli nie znaleziono słowa w tej gałęzi, zwraca -1
+    return -1
 
 
 print(f"Odległośc logiczna między słowami: '{first_word}', '{second_word}' wynosi {main_function((URL + first_word), main_counter)}")
