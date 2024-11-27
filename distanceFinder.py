@@ -56,7 +56,6 @@ def is_word_on_any_page(main_link):
     link_counter = 0
     found = False
     for link in all_links:
-        # print(f'link_counter = {link_counter}')
         print(link)
         link_counter += 1
         page_second = requests.get(link)
@@ -76,7 +75,6 @@ first_word = input("Pierwsze słowo: ")
 second_word = input("Drugie słowo: ")
 main_counter = 1
 
-
 def main_function(main_link, counter=1, max_depth=5):
     """
     Rekurencyjna funkcja do wyznaczenia odległości między słowami w sensie logicznym na stronach internetowych.
@@ -89,7 +87,7 @@ def main_function(main_link, counter=1, max_depth=5):
     Returns:
         int: Odległość logiczna między słowami lub -1, jeśli słowo nie zostanie znalezione.
     """
-    # Sprawdzanie, czy przekroczono maksymalną głębokość
+    # Sprawdza, czy przekroczono maksymalną głębokość
     if counter > max_depth:
         print("Osiągnięto maksymalną głębokość wyszukiwania.")
         return -1
@@ -103,16 +101,22 @@ def main_function(main_link, counter=1, max_depth=5):
     # Sprawdza, czy drugie słowo jest w treści
     if second_word in body.get_text():
         return counter
-
-    # Przechodzi przez linki na bieżącej stronie
+    counter += 1
+    # Sprawdza czy jest w którymś z linków
+    print(f"Poziom wyszukiwania: {counter}")
+    if is_word_on_any_page(main_link):
+        return counter
+    counter += 1
+    # Przechodzi przez linki na bieżącej stronie i szuka głębiej
     for link in get_all_links(body):
         print(f"Poziom wyszukiwania: {counter}, Przeszukiwany link: {link}")
         # Sprawdź, czy drugie słowo jest na tej stronie
         if is_word_on_any_page(link):
-            return counter + 1
-
+            return counter
+    loop_counter = 1
     # Rekurencyjnie przeszukuje każdy link
     for link in get_all_links(body):
+        loop_counter += 1
         result = main_function(link, counter + 1, max_depth)
         if result != -1:  # Jeśli znaleziono słowo, zwracamy wynik
             return result
