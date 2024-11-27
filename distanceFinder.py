@@ -116,8 +116,7 @@ def main_function(main_link, counter=1, max_depth=5):
     loop_counter = 1
     # Rekurencyjnie przeszukuje każdy link
     for link in get_all_links(body):
-        loop_counter += 1
-        result = main_function(link, counter + 1, max_depth)
+        result = main_function(link, counter + 2, max_depth)
         if result != -1:  # Jeśli znaleziono słowo, zwracamy wynik
             return result
 
