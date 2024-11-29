@@ -12,7 +12,7 @@ def filter_wiki_url(link):
         return link
     return None
 
-# Funkcja zwraca liste linków z elementu body
+# Funkcja zwraca liste linków z elementów html, które zawierają treść artykułu z Wikipedii
 def get_all_links(body_data):
     all_links = []
     for link in body_data.find_all('a', href=True):
@@ -62,7 +62,7 @@ def is_word_on_any_page(main_link):
         soup_second = BeautifulSoup(page_second.text, 'html.parser')
         body_second = soup_second.find('div', id='bodyContent')
         if body_second is None:
-            print(f"Warning: Body for link {main_link} is None.")
+            print(f"Ostrzeżenie: Element body jest wartością 'None' dla linku {main_link}.")
             return False  # Możesz zwrócić False lub odpowiednią wartość w zależności od logiki
         if second_word in body_second.get_text():
             found = True
@@ -113,7 +113,6 @@ def main_function(main_link, counter=1, max_depth=5):
         # Sprawdź, czy drugie słowo jest na tej stronie
         if is_word_on_any_page(link):
             return counter
-    loop_counter = 1
     # Rekurencyjnie przeszukuje każdy link
     for link in get_all_links(body):
         result = main_function(link, counter + 2, max_depth)
