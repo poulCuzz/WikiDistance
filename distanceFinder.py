@@ -56,6 +56,10 @@ def is_word_on_any_page(main_link):
     link_counter = 0
     found = False
     for link in all_links:
+        # sprawdza czy nie ma już tego linku w zbiorze, jeśli jest pomija go
+        if link in links_base:
+            continue
+        links_base.add(link)
         print(link)
         link_counter += 1
         page_second = requests.get(link)
@@ -74,7 +78,7 @@ baseURL = "https://pl.wikipedia.org"
 first_word = input("Pierwsze słowo: ")
 second_word = input("Drugie słowo: ")
 main_counter = 1
-
+links_base = set() # zbiór który zapamiętuje otwarte linki
 def main_function(main_link, counter=1, max_depth=5):
     """
     Rekurencyjna funkcja do wyznaczenia odległości między słowami w sensie logicznym na stronach internetowych.
